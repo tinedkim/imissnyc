@@ -7,7 +7,7 @@
   </style>
 
   <body>
-    <form method="POST" action="/add">
+    <form method="POST" action="/login">
       <p>
         Name: <input type="text" name="name" /> Uni:
         <input type="text" name="uni" />
@@ -15,7 +15,7 @@
       </p>
     </form>
 
-    <form method="POST" action="/">
+    <form method="POST" action="{{url_for('getarea')}}">
       <label for="areas">Choose an area in NYC you'd want to go to:</label>
       <select name="areas" id="areas">
         <option value="Times Square">Times Square</option>
@@ -28,13 +28,12 @@
       <input type="submit" value="Submit" />
     </form>
     <div>{{data}}</div>
+    {% include 'event.html' %}
 
     <div>
       {% for n in data %}
       <div>{{n}}</div>
       {% endfor %}
     </div>
-
-    <p><a href="another">Go to the other page</a></p>
   </body>
 </html>

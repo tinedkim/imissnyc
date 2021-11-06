@@ -49,6 +49,7 @@ engine.execute("""INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'
 
 '''
 
+
 # how do we save uni on the page
 
 def reserve_restaurant():
@@ -107,19 +108,7 @@ def teardown_request(exception):
 # see for routing: https://flask.palletsprojects.com/en/2.0.x/quickstart/?highlight=routing
 # see for decorators: http://simeonfranklin.com/blog/2012/jul/1/python-decorators-in-12-steps/
 #
-
-'''
-@app.route("/getarea" , methods=['POST'])
-def getarea():
-  select = request.form.get('areas')
-  cursor = g.conn.execute("SELECT L.locationID FROM location L WHERE L.area = '{0}'".format(str(select)))
-  names = []
-  for result in cursor:
-    names.append(result[0])
-  return redirect('/')
-'''
-
-@app.route('/', methods=['POST'])
+@app.route('/')
 def index():
   """
   request is a special object that Flask provides to access web request information:
@@ -139,12 +128,6 @@ def index():
   #
   # example of a database query
   #
-  select = request.form.get('areas')  
-  cursor = g.conn.execute("SELECT L.locationID FROM location L WHERE L.area = '{0}'".format(str(select)))
-  location_ids = []
-  for result in cursor:
-    location_ids.append(result[0])
-  cursor.close()
 
   #
   # Flask uses Jinja templates, which is an extension to HTML where you can
@@ -172,41 +155,43 @@ def index():
   #     <div>{{n}}</div>
   #     {% endfor %}
   #
-  context = dict(data = location_ids)
 
 
   #
   # render_template looks in the templates/ folder for files.
   # for example, the below file reads template/index.html
   #
-  return render_template("index.html", **context)
+  return render_template("index.html")
 
 #
 # This is an example of a different path.  You can see it at:
 # 
-#     localhost:8111/another
+#     localhost:8111/event
 #
-# Notice that the function name is another() rather than index()
+# Notice that the function name is event() rather than index()
 # The functions for each app.route need to have different names
 #
-@app.route('/another')
-def another():
-  return render_template("another.html")
+
+@app.route("/getareas" , methods=['POST'])
+def getarea():
+  select = request.form.get('areas')
+  cursor = g.conn.execute("SELECT L.locationID FROM location L WHERE L.area = '{0}'".format(str(select)))
+  locationIds= []
+  for result in cursor:
+    locationIds.append(result[0])
+  
+  context = dict(locations = locationIds)
+  return render_template("index.html", **context)
+
 
 # Example of adding new data to the database
-@app.route('/add', methods=['POST'])
+@app.route('/login', methods=['POST'])
 def add():
   name = request.form['name']
   uni = request.form['uni']
   # account for when user already exists -- switch to logged in state
   g.conn.execute('INSERT INTO Person(uni, pname) VALUES (%s, %s)', uni, name)
   return redirect('/')
-
-
-@app.route('/login')
-def login():
-    abort(401)
-    this_is_never_executed()
 
 
 if __name__ == "__main__":
