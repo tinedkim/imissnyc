@@ -47,6 +47,25 @@ engine.execute("""CREATE TABLE IF NOT EXISTS test (
 );""")
 engine.execute("""INSERT INTO test(name) VALUES ('grace hopper'), ('alan turing'), ('ada lovelace');""")
 
+'''
+
+# how do we save uni on the page
+
+def reserve_restaurant():
+  # get uni from the page?? they have to be logged in
+  rname
+  location 
+  g.conn.execute('INSERT INTO EatsAt(rname, locationID, uni) VALUES (%s, %d, %s)', rname, location, uni)
+  return redirect('/')
+
+def buy_ticket():
+  # get uni from the page?? they have to be logged in
+  barcode
+  g.conn.execute('INSERT INTO Buys(ticket_barcode, uni) VALUES (%s, %s)', barcode, uni)
+  return redirect('/')
+
+'''
+
 
 @app.before_request
 def before_request():
@@ -63,7 +82,6 @@ def before_request():
     print("uh oh, problem connecting to database")
     import traceback; traceback.print_exc()
     g.conn = None
-
 @app.teardown_request
 def teardown_request(exception):
   """
@@ -89,7 +107,19 @@ def teardown_request(exception):
 # see for routing: https://flask.palletsprojects.com/en/2.0.x/quickstart/?highlight=routing
 # see for decorators: http://simeonfranklin.com/blog/2012/jul/1/python-decorators-in-12-steps/
 #
-@app.route('/')
+
+'''
+@app.route("/getarea" , methods=['POST'])
+def getarea():
+  select = request.form.get('areas')
+  cursor = g.conn.execute("SELECT L.locationID FROM location L WHERE L.area = '{0}'".format(str(select)))
+  names = []
+  for result in cursor:
+    names.append(result[0])
+  return redirect('/')
+'''
+
+@app.route('/', methods=['POST'])
 def index():
   """
   request is a special object that Flask provides to access web request information:
@@ -109,10 +139,11 @@ def index():
   #
   # example of a database query
   #
-  cursor = g.conn.execute("SELECT name FROM test")
-  names = []
+  select = request.form.get('areas')  
+  cursor = g.conn.execute("SELECT L.locationID FROM location L WHERE L.area = '{0}'".format(str(select)))
+  location_ids = []
   for result in cursor:
-    names.append(result['name'])  # can also be accessed using result[0]
+    location_ids.append(result[0])
   cursor.close()
 
   #
@@ -141,7 +172,7 @@ def index():
   #     <div>{{n}}</div>
   #     {% endfor %}
   #
-  context = dict(data = names)
+  context = dict(data = location_ids)
 
 
   #
@@ -162,12 +193,13 @@ def index():
 def another():
   return render_template("another.html")
 
-
 # Example of adding new data to the database
 @app.route('/add', methods=['POST'])
 def add():
   name = request.form['name']
-  g.conn.execute('INSERT INTO test(name) VALUES (%s)', name)
+  uni = request.form['uni']
+  # account for when user already exists -- switch to logged in state
+  g.conn.execute('INSERT INTO Person(uni, pname) VALUES (%s, %s)', uni, name)
   return redirect('/')
 
 

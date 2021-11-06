@@ -1,29 +1,40 @@
 <html>
   <style>
-    body{ 
+    body {
       font-size: 15pt;
       font-family: arial;
     }
   </style>
 
+  <body>
+    <form method="POST" action="/add">
+      <p>
+        Name: <input type="text" name="name" /> Uni:
+        <input type="text" name="uni" />
+        <input type="submit" value="Sign Up" />
+      </p>
+    </form>
 
-<body>
-  <h1>Some famous Computer Scientists</h1>
-  <div>{{data}}</div>
+    <form method="POST" action="/">
+      <label for="areas">Choose an area in NYC you'd want to go to:</label>
+      <select name="areas" id="areas">
+        <option value="Times Square">Times Square</option>
+        <option value="Upper East Side">Upper East Side</option>
+        <option value="Williamsburg">Williamsburg</option>
+        <option value="Lower East Side">Lower East Side</option>
+        <option value="Chelsea">Chelsea</option>
+      </select>
+      <br /><br />
+      <input type="submit" value="Submit" />
+    </form>
+    <div>{{data}}</div>
 
-  <div>
-    {% for n in data %}
-    <div>{{n}}</div>
-    {% endfor %}
-  </div>
+    <div>
+      {% for n in data %}
+      <div>{{n}}</div>
+      {% endfor %}
+    </div>
 
-<p><a href="another">Go to the other page</a></p>
-
-<form method="POST" action="/add">
-<p>Name of new computer scientist: <input type="text" name="name"> <input type="submit" value="Add"></p>
-</form>
-
-</body>
-
-
+    <p><a href="another">Go to the other page</a></p>
+  </body>
 </html>
