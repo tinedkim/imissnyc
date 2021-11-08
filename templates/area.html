@@ -1,13 +1,28 @@
 <div id="event">
-  {% if events is defined %} {% for key, value in events.items() %}
-  <h3>{{ value["e_name"] }}</h3>
-  <li>{{ value["e_type"] }}</li>
-  <li>{{ value["address"] }}</li>
-  <li>{{ value["date"] }}</li>
-  <li>{{ value["start_time"] }} to {{ value["end_time"] }}</li>
-  <li>{{ value["spots_left"] }}</li>
-  <img src="{{value['image']}}" width="400" height="400" /> {% endfor %} {% else
-  %} {% endif %}
+  {% if events is defined %}
+    {% for e_key, e_value in events.items() %}
+      <h3>{{ e_value["e_name"] }}</h3>
+      <li>{{ e_value["e_type"] }}</li>
+      <li>{{ e_value["address"] }}</li>
+      <li>{{ e_value["date"] }}</li>
+      <li>{{ e_value["start_time"] }} to {{ e_value["end_time"] }}</li>
+      <li>{{ e_value["spots_left"] }}</li>
+      <img src="{{e_value['image']}}" width="400" height="400" />
+      
+      <div id="ticket">
+        <h4>Tickets</h4>
+        {% for t_key, t_value in events[e_key]['tickets'].items() %}
+          <li>{{ t_key }}</li>
+          <li>${{ t_value["price"] }}</li>
+          {% if t_value["owner"] != 'none' %}
+            <button type="button" disabled>{{ t_value["owner"] }}</button>
+          {% else%}
+            <button type="button">Reserve</button>
+          {% endif %}
+        {% endfor %}
+      </div>
+    {% endfor %}
+  {% endif %}
 </div>
 
 <div id="restaurant"></div>
