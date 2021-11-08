@@ -11,3 +11,11 @@
 </div>
 
 <div id="restaurant"></div>
+{% if restaurants is defined %} {% for key, value in restaurants.items() %}
+  <li>{{ value["cuisine"] }}</li>
+  <li>{{ value["rating"] }}</li>
+  <li>{{ value["review_number"] }}</li>
+  <li>{{ value["price_estimation"] }}</li>
+  <img src="{{value['image']}}" width="400" height="400" /> {% endfor %} {% else
+  %} {% endif %}
+</div>
