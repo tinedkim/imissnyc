@@ -21,7 +21,7 @@ app = Flask(__name__, template_folder=tmpl_dir)
 DATABASEURI = "postgresql://ck2980:7876@34.74.246.148/proj1part2"
 
 engine = create_engine(DATABASEURI)
-user = None
+user = ()
 
 '''
 # how do we save uni on the page
@@ -51,6 +51,7 @@ def before_request():
     g.conn = None
 @app.teardown_request
 def teardown_request(exception):
+  print(user)
   try:
     g.conn.close()
   except Exception as e:
@@ -59,7 +60,6 @@ def teardown_request(exception):
 @app.route('/')
 def index():
   print(request.args)
-
   return render_template("index.html")
 
 @app.route("/getareas" , methods=['POST'])
@@ -73,9 +73,7 @@ def getarea():
   events = getEvents(locationIds)
   restaurants = getRestaurants(locationIds)
   
-  #event_context = dict(events = events)
-  #restaurant_context = dict(restaurants = restaurants)
-  return render_template("index.html", events = events, restaurants = restaurants)
+  return render_template("index.html", events = events, restaurants = restaurants, user = user)
 
 def getEvents(locationIds):
   eventInfo = {}
@@ -98,6 +96,7 @@ def getEvents(locationIds):
         'end_time': event[5].strftime("%H:%M"),
         'spots_left': event[6]
       })
+
     loc_id = eventInfo[eventId]['loc_id']
     locations = g.conn.execute("SELECT * FROM Location L WHERE L.locationID = {0}".format(loc_id))
     for location in locations:
@@ -106,20 +105,42 @@ def getEvents(locationIds):
         'address': address,
         'image': location[5]
       })
+    
+    tickets = get_tickets(eventId)
+    eventInfo[eventId].update({
+        'tickets': tickets
+      })
   return eventInfo
+
+def get_tickets(event_id):
+  ticketsInfo = {}
+  tickets = g.conn.execute('SELECT * FROM Ticket_Allowed_Entry T WHERE T.eventID = {0}'.format(event_id))
+  for ticket in tickets:
+    ticketsInfo[ticket[0]] = {
+        'price': ticket[1],
+        'owner': 'none'
+      }
+    ticket_owners = g.conn.execute('SELECT * FROM Buys B')
+    reserved = False, None
+    for owner in ticket_owners:
+      if owner[0] == ticket[0]:
+        reserved = True, owner[1]
+    if reserved[0]:
+      ticketsInfo[ticket[0]]['owner'] = reserved[1]
+  return ticketsInfo
+
+def reserve_event():
+  pass
 
 def getRestaurants(locationIds):
   restaurantInfo = {}
   for id in locationIds:
     eats = g.conn.execute("SELECT EA.rname, EA.locationID FROM Eats_At EA WHERE EA.locationID = {0}".format(id))
     for result in eats:
-      #print(id)
-      #print(result)
       if id == result[1]:
         restaurantInfo[result[0]] = {
           'loc_id': result[1]
         }
-  #print(restaurantInfo)
 
   for rname in restaurantInfo.keys():
     restaurants = g.conn.execute("SELECT * FROM Near_Restaurant N WHERE N.rname = '{0}'".format(rname))
@@ -139,16 +160,13 @@ def getRestaurants(locationIds):
         'address': address,
         'image': location[5]
       })
-  print(restaurantInfo)
   return restaurantInfo
 
-# Example of adding new data to the database
 @app.route('/login', methods=['POST'])
 def add():
   global user
   uni = request.form['uni']
   name = request.form['name']
-  # account for when user already exists -- switch to logged in state
   persons = g.conn.execute('SELECT * FROM Person P')
   returning_user = False
   for person in persons:
@@ -157,7 +175,7 @@ def add():
   if not returning_user:
     g.conn.execute('INSERT INTO Person(uni, pname) VALUES (%s, %s)', uni, name)
   user = (uni, name)
-  return redirect('/')
+  return render_template("index.html", user = user)
 
 if __name__ == "__main__":
   import click
