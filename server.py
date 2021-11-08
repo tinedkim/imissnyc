@@ -21,7 +21,7 @@ app = Flask(__name__, template_folder=tmpl_dir)
 DATABASEURI = "postgresql://ck2980:7876@34.74.246.148/proj1part2"
 
 engine = create_engine(DATABASEURI)
-user = None
+user = ()
 
 '''
 # how do we save uni on the page
@@ -51,6 +51,7 @@ def before_request():
     g.conn = None
 @app.teardown_request
 def teardown_request(exception):
+  print(user)
   try:
     g.conn.close()
   except Exception as e:
@@ -72,7 +73,7 @@ def getarea():
   events = getEvents(locationIds)
   restaurants = getRestaurants(locationIds)
   
-  return render_template("index.html", events = events, restaurants = restaurants)
+  return render_template("index.html", events = events, restaurants = restaurants, user = user)
 
 def getEvents(locationIds):
   eventInfo = {}
@@ -110,6 +111,26 @@ def getEvents(locationIds):
         'tickets': tickets
       })
   return eventInfo
+
+def get_tickets(event_id):
+  ticketsInfo = {}
+  tickets = g.conn.execute('SELECT * FROM Ticket_Allowed_Entry T WHERE T.eventID = {0}'.format(event_id))
+  for ticket in tickets:
+    ticketsInfo[ticket[0]] = {
+        'price': ticket[1],
+        'owner': 'none'
+      }
+    ticket_owners = g.conn.execute('SELECT * FROM Buys B')
+    reserved = False, None
+    for owner in ticket_owners:
+      if owner[0] == ticket[0]:
+        reserved = True, owner[1]
+    if reserved[0]:
+      ticketsInfo[ticket[0]]['owner'] = reserved[1]
+  return ticketsInfo
+
+def reserve_event():
+  pass
 
 def getRestaurants(locationIds):
   restaurantInfo = {}
@@ -154,27 +175,7 @@ def add():
   if not returning_user:
     g.conn.execute('INSERT INTO Person(uni, pname) VALUES (%s, %s)', uni, name)
   user = (uni, name)
-  return redirect('/')
-
-def get_tickets(event_id):
-  ticketsInfo = {}
-  tickets = g.conn.execute('SELECT * FROM Ticket_Allowed_Entry T WHERE T.eventID = {0}'.format(event_id))
-  for ticket in tickets:
-    ticketsInfo[ticket[0]] = {
-        'price': ticket[1],
-        'owner': 'none'
-      }
-    ticket_owners = g.conn.execute('SELECT * FROM Buys B')
-    reserved = False, None
-    for owner in ticket_owners:
-      if owner[0] == ticket[0]:
-        reserved = True, owner[1]
-    if reserved[0]:
-      ticketsInfo[ticket[0]]['owner'] = reserved[1]
-  return ticketsInfo
-
-def reserve_event():
-  pass
+  return render_template("index.html", user = user)
 
 if __name__ == "__main__":
   import click

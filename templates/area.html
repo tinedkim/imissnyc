@@ -16,7 +16,7 @@
           <li>${{ t_value["price"] }}</li>
           {% if t_value["owner"] != 'none' %}
             <button type="button" disabled>{{ t_value["owner"] }}</button>
-          {% else%}
+          {% else %}
             <button type="button">Reserve</button>
           {% endif %}
         {% endfor %}
