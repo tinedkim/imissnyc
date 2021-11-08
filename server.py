@@ -217,6 +217,34 @@ def getEvents(locationIds):
       })
   return eventInfo
 
+def getRestaurants(locationIds):
+  restaurantInfo = {}
+  for id in locationIds:
+    eats = g.conn.execute("SELECT EA.rname, EA.locationID FROM Eats_At EA WHERE EA.locationID = {0}".format(id))
+    for result in eats:
+      if id == result[0]:
+        restaurantInfo[result[0]] = {
+          'loc_id': result[1]
+        }
+  for rname, locationId in restaurantInfo.keys():
+    restaurants = g.conn.execute("SELECT * FROM Near_Restaurant N WHERE N.locationID = {0}".format(locationId))
+    for restaurant in restaurants:
+      restaurantInfo[rname, locationId].update({
+        'cuisine': restaurant[1],
+        'rating': restaurant[2],
+        'review_number': restaurant[3],
+        'price_estimation': restaurant[4]
+      })
+    loc_id = restaurantInfo[rname, locationId]['loc_id']
+    locations = g.conn.execute("SELECT * FROM Location L WHERE L.locationID = {0}".format(loc_id))
+    for location in locations:
+      address = '{0}, {1}, {2}'.format(location[2], location[4], str(location[3]))
+      restaurantInfo[rname, locationId].update({
+        'address': address,
+        'image': location[5]
+      })
+  return restaurantInfo
+
 # Example of adding new data to the database
 @app.route('/login', methods=['POST'])
 def add():
