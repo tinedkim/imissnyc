@@ -1,0 +1,13 @@
+<div id="event">
+  {% if events is defined %} {% for key, value in events.items() %}
+  <h3>{{ value["e_name"] }}</h3>
+  <li>{{ value["e_type"] }}</li>
+  <li>{{ value["address"] }}</li>
+  <li>{{ value["date"] }}</li>
+  <li>{{ value["start_time"] }} to {{ value["end_time"] }}</li>
+  <li>{{ value["spots_left"] }}</li>
+  <img src="{{value['image']}}" width="400" height="400" /> {% endfor %} {% else
+  %} {% endif %}
+</div>
+
+<div id="restaurant"></div>

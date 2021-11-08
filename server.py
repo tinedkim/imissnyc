@@ -13,6 +13,7 @@ import os
 from sqlalchemy import *
 from sqlalchemy.pool import NullPool
 from flask import Flask, request, render_template, g, redirect, Response
+from datetime import datetime
 
 tmpl_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
 app = Flask(__name__, template_folder=tmpl_dir)
@@ -180,9 +181,41 @@ def getarea():
   for result in cursor:
     locationIds.append(result[0])
   
-  context = dict(locations = locationIds)
+  events = getEvents(locationIds)
+  
+  context = dict(events = events)
   return render_template("index.html", **context)
 
+def getEvents(locationIds):
+  eventInfo = {}
+  for id in locationIds:
+    occurs = g.conn.execute("SELECT O.eventID, O.locationID FROM Occurs_In O WHERE O.locationID = {0}".format(id))
+    for result in occurs:
+      if id == result[0]:
+        eventInfo[result[0]] = {
+          'loc_id': result[1]
+        }
+
+  for eventId in eventInfo.keys():
+    events = g.conn.execute("SELECT * FROM Event E WHERE E.eventID = {0}".format(eventId))
+    for event in events:
+      eventInfo[eventId].update({
+        'e_name': event[1],
+        'e_type': event[2],
+        'date': event[3].strftime("%m/%d/%Y"),
+        'start_time': event[4].strftime("%H:%M"),
+        'end_time': event[5].strftime("%H:%M"),
+        'spots_left': event[6]
+      })
+    loc_id = eventInfo[eventId]['loc_id']
+    locations = g.conn.execute("SELECT * FROM Location L WHERE L.locationID = {0}".format(loc_id))
+    for location in locations:
+      address = '{0}, {1}, {2}'.format(location[2], location[4], str(location[3]))
+      eventInfo[eventId].update({
+        'address': address,
+        'image': location[5]
+      })
+  return eventInfo
 
 # Example of adding new data to the database
 @app.route('/login', methods=['POST'])
