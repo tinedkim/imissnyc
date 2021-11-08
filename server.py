@@ -182,9 +182,11 @@ def getarea():
     locationIds.append(result[0])
   
   events = getEvents(locationIds)
+  restaurants = getRestaurants(locationIds)
   
-  context = dict(events = events)
-  return render_template("index.html", **context)
+  #event_context = dict(events = events)
+  #restaurant_context = dict(restaurants = restaurants)
+  return render_template("index.html", events = events, restaurants = restaurants)
 
 def getEvents(locationIds):
   eventInfo = {}
@@ -222,27 +224,33 @@ def getRestaurants(locationIds):
   for id in locationIds:
     eats = g.conn.execute("SELECT EA.rname, EA.locationID FROM Eats_At EA WHERE EA.locationID = {0}".format(id))
     for result in eats:
-      if id == result[0]:
+      #print(id)
+      #print(result)
+      if id == result[1]:
         restaurantInfo[result[0]] = {
           'loc_id': result[1]
         }
-  for rname, locationId in restaurantInfo.keys():
-    restaurants = g.conn.execute("SELECT * FROM Near_Restaurant N WHERE N.locationID = {0}".format(locationId))
+  #print(restaurantInfo)
+
+  for rname in restaurantInfo.keys():
+    restaurants = g.conn.execute("SELECT * FROM Near_Restaurant N WHERE N.rname = '{0}'".format(rname))
     for restaurant in restaurants:
-      restaurantInfo[rname, locationId].update({
+      restaurantInfo[rname].update({
         'cuisine': restaurant[1],
         'rating': restaurant[2],
         'review_number': restaurant[3],
         'price_estimation': restaurant[4]
       })
-    loc_id = restaurantInfo[rname, locationId]['loc_id']
+      
+    loc_id = restaurantInfo[rname]['loc_id']
     locations = g.conn.execute("SELECT * FROM Location L WHERE L.locationID = {0}".format(loc_id))
     for location in locations:
       address = '{0}, {1}, {2}'.format(location[2], location[4], str(location[3]))
-      restaurantInfo[rname, locationId].update({
+      restaurantInfo[rname].update({
         'address': address,
         'image': location[5]
       })
+  print(restaurantInfo)
   return restaurantInfo
 
 # Example of adding new data to the database

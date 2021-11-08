@@ -12,6 +12,7 @@
 
 <div id="restaurant"></div>
 {% if restaurants is defined %} {% for key, value in restaurants.items() %}
+  <h3>{{ key }}</h3>
   <li>{{ value["cuisine"] }}</li>
   <li>{{ value["rating"] }}</li>
   <li>{{ value["review_number"] }}</li>
