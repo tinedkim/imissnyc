@@ -36,12 +36,17 @@
 </div>
 
 <div id="restaurant"></div>
-{% if restaurants is defined %} {% for key, value in restaurants.items() %}
-  <h3>{{ key }}</h3>
-  <li>{{ value["cuisine"] }}</li>
-  <li>{{ value["rating"] }}</li>
-  <li>{{ value["review_number"] }}</li>
-  <li>{{ value["price_estimation"] }}</li>
-  <img src="{{value['image']}}" width="400" height="400" /> {% endfor %} {% else
-  %} {% endif %}
+  {% if restaurants is defined %} 
+    {% for r_key, r_value in restaurants.items() %}
+      <h3>{{ r_key }}</h3>
+      <li>{{ r_value["cuisine"] }}</li>
+      <li>{{ r_value["rating"] }}</li>
+      <li>{{ r_value["review_number"] }}</li>
+      <li>{{ r_value["price_estimation"] }}</li>
+      <img src="{{r_value['image']}}" width="400" height="400" /> 
+
+     
+      
+    {% endfor %}
+  {% endif %}
 </div>

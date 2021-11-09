@@ -182,6 +182,15 @@ def getRestaurants(locationIds):
       })
   return restaurantInfo
 
+@app.route('/reserve', methods=['POST'])
+def reserve_restauarnt():
+  rname = request.form.get('reserve')
+  global user
+  uni = user[0]
+  restaurants = g.conn.execute("SELECT E.locationID FROM Eats_At E WHERE E.rname = {0}".format(rname))
+  # check for what restaurants returns -- ideally we want [locationID]
+  r_locationID = restaurants[0] 
+
 @app.route('/login', methods=['POST'])
 def add():
   global user
