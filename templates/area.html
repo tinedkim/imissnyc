@@ -6,7 +6,13 @@
       <li>{{ e_value["address"] }}</li>
       <li>{{ e_value["date"] }}</li>
       <li>{{ e_value["start_time"] }} to {{ e_value["end_time"] }}</li>
-      <li>{{ e_value["spots_left"] }}</li>
+      {% if e_value["spots_left"] > 1 %}
+        <li>{{ e_value["spots_left"] }} spots left</li>
+      {% elif e_value["spots_left"] == 1 %}
+        <li>Only 1 spot left!</li>
+      {% else %}
+         <li>No spots left</li>
+      {% endif %}
       <img src="{{e_value['image']}}" width="400" height="400" />
       
       <div id="ticket">
@@ -16,8 +22,12 @@
           <li>${{ t_value["price"] }}</li>
           {% if t_value["owner"] != 'none' %}
             <button type="button" disabled>{{ t_value["owner"] }}</button>
+          {% elif user|length == 0 %}
+            <button type="button" disabled>Sign in to reserve</button>
           {% else %}
-            <button type="button">Reserve</button>
+          <form method="POST" action="{{url_for('reserve_event')}}">
+            <button type="submit" name="reserve" value="{{ t_key }}">Reserve</button>
+          </form>
           {% endif %}
         {% endfor %}
       </div>
