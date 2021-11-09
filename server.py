@@ -22,6 +22,7 @@ DATABASEURI = "postgresql://ck2980:7876@34.74.246.148/proj1part2"
 
 engine = create_engine(DATABASEURI)
 user = ()
+eventInfo = {}
 
 '''
 # how do we save uni on the page
@@ -69,14 +70,15 @@ def getarea():
   locationIds= []
   for result in cursor:
     locationIds.append(result[0])
-  
+  global eventInfo
+  eventInfo = {}
   events = getEvents(locationIds)
   restaurants = getRestaurants(locationIds)
   
   return render_template("index.html", events = events, restaurants = restaurants, user = user)
 
 def getEvents(locationIds):
-  eventInfo = {}
+  global eventInfo
   for id in locationIds:
     occurs = g.conn.execute("SELECT O.eventID, O.locationID FROM Occurs_In O WHERE O.locationID = {0}".format(id))
     for result in occurs:
@@ -84,7 +86,11 @@ def getEvents(locationIds):
         eventInfo[result[1]] = {
           'loc_id': result[0]
         }
+  update_eventInfo()
+  return eventInfo
 
+def update_eventInfo():
+  global eventInfo
   for eventId in eventInfo.keys():
     events = g.conn.execute("SELECT * FROM Event E WHERE E.eventID = {0}".format(eventId))
     for event in events:
@@ -108,9 +114,8 @@ def getEvents(locationIds):
     
     tickets = get_tickets(eventId)
     eventInfo[eventId].update({
-        'tickets': tickets
-      })
-  return eventInfo
+      'tickets': tickets
+     })
 
 def get_tickets(event_id):
   ticketsInfo = {}
@@ -129,8 +134,23 @@ def get_tickets(event_id):
       ticketsInfo[ticket[0]]['owner'] = reserved[1]
   return ticketsInfo
 
+@app.route('/reserve', methods=['POST'])
 def reserve_event():
-  pass
+  ticket_barcode = request.form.get('reserve')
+  global user
+  uni = user[0]
+  events = g.conn.execute("SELECT T.eventID FROM Ticket_Allowed_Entry T WHERE T.ticket_barcode = {0}".format(ticket_barcode))
+  # check for what events returns -- ideally we want [eventID]
+  ticket_eventID = events[0]
+  # check for what spots_left returns (what the data looks like) -- ideally we want a number
+  spots_left = g.conn.execute('SELECT E.spots_left FROM Event E WHERE E.eventID = {0}'.format(ticket_eventID))
+  if (spots_left > 0):
+    g.conn.execute('UPDATE Event SET spots_left = spots_left - 1 WHERE eventID = {0}'.format(ticket_eventID))
+    g.conn.execute('INSERT INTO Buys(ticket_barcode, uni) VALUES (%s, %s)', ticket_barcode, uni)
+    update_eventInfo()
+  global eventInfo
+  return render_template("index.html", events = eventInfo)
+  
 
 def getRestaurants(locationIds):
   restaurantInfo = {}
