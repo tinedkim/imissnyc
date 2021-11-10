@@ -169,12 +169,18 @@ def getRestaurants(locationIds):
 
 @app.route('/reserve_restaurant', methods=['POST'])
 def reserve_restaurant():
-  rname = request.form.get('reserve')
+  rname = request.form.get('reserve_restaurant')
   global user
   uni = user[0]
-  restaurants = g.conn.execute("SELECT E.locationID FROM Eats_At E WHERE E.rname = {0}".format(rname))
+  # get location id from restaurantInfo
+
+  # insert rname, location id, and uni into eats_at
+
+  return redirect('/')
+
+  # restaurants = g.conn.execute("SELECT E.locationID FROM Eats_At E WHERE E.rname = '{0}'".format(rname))
   # check for what restaurants returns -- ideally we want [locationID]
-  r_locationID = restaurants[0] 
+  # r_locationID = restaurants[0] 
 
 @app.route('/login', methods=['POST'])
 def add():
@@ -190,6 +196,15 @@ def add():
     g.conn.execute('INSERT INTO Person(uni, pname) VALUES (%s, %s)', uni, name)
   user = (uni, name)
   return render_template("index.html", user = user)
+
+def get_itinerary():
+  global user
+  # get all restaurant reserves from Eats_At
+  if len(user) > 0:
+    uni = user[0]
+    restaurant_reserves = g.conn.execute('SELECT * FROM Eats_At EA WHERE EA.uni = "{0}"')
+  # get all ticket barcodes from Buys
+  # get all eventids with the ticket barcodes from Ticket_Allowed_Entry
 
 if __name__ == "__main__":
   import click
