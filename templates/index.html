@@ -30,6 +30,26 @@
       <br /><br />
       <input type="submit" value="Submit" />
     </form>
-    {% include 'area.html' %}
+    <!--
+    {% include 'area.html' %} {% if itinerary is defined %}
+    <div id="itinerary">
+      {% if itinerary['events']|length == 0 %}
+      <h5>No events planned! Reserve your spot at your favorite events!</h5>
+      {%else%} {% for eventID in itinerary['events'] %}
+      <h5>
+        {{ events[eventID]["start_time"] }} - {{ events[eventID]["end_time"] }}
+        : {{ events[eventID]["e_name"] }}
+      </h5>
+      {% endfor %} {% endif %} {% if itinerary['restaurants']|length == 0 %}
+      <h5>
+        You're not eating at any restaurant yet. Reserve your spot at your
+        favorite restaurant!
+      </h5>
+      {%else%} {% for rname in itinerary['restaurants'] %}
+      <h5>{{ restaurants[rname]["address"] }}</h5>
+      {% endfor %} {% endif %}
+    </div>
+    {% endif %}
+    -->
   </body>
 </html>

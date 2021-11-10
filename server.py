@@ -134,7 +134,8 @@ def reserve_event():
     g.conn.execute('INSERT INTO Buys(ticket_barcode, uni) VALUES (%s, %s)', ticket_barcode, uni)
     update_eventInfo()
   global eventInfo
-  return render_template("index.html", events = eventInfo, user = user)
+  itinerary = get_itinerary
+  return render_template("index.html", events = eventInfo, user = user, itinerary = itinerary)
   
 
 def getRestaurants(locationIds):
@@ -176,7 +177,9 @@ def reserve_restaurant():
 
   # insert rname, location id, and uni into eats_at
 
-  return redirect('/')
+  # reserving a restaurant should update user's itinerary
+  itinerary = get_itinerary()
+  render_template("index.html", itinerary = itinerary)
 
   # restaurants = g.conn.execute("SELECT E.locationID FROM Eats_At E WHERE E.rname = '{0}'".format(rname))
   # check for what restaurants returns -- ideally we want [locationID]
@@ -195,16 +198,48 @@ def add():
   if not returning_user:
     g.conn.execute('INSERT INTO Person(uni, pname) VALUES (%s, %s)', uni, name)
   user = (uni, name)
-  return render_template("index.html", user = user)
+  itinerary = get_itinerary()
+  return render_template("index.html", user = user, itinerary = itinerary)
 
 def get_itinerary():
   global user
   # get all restaurant reserves from Eats_At
+  user_events = []
+  user_restaurants = []
+  itinerary = {
+    'events': {},
+    'restaurants': {}
+  }
   if len(user) > 0:
     uni = user[0]
-    restaurant_reserves = g.conn.execute('SELECT * FROM Eats_At EA WHERE EA.uni = "{0}"')
-  # get all ticket barcodes from Buys
-  # get all eventids with the ticket barcodes from Ticket_Allowed_Entry
+    event_reserves = g.conn.execute('SELECT T.eventID, B.uni FROM Ticket_Allowed_Entry T, Buys B WHERE T.ticket_barcode = B.ticket_barcode')
+    for event in event_reserves:
+      if event[1] == uni:
+        user_events.append(event[0])
+    restaurant_reserves = g.conn.execute('SELECT * FROM Eats_At EA')
+    for restaurant in restaurant_reserves:
+      if restaurant[1] == uni:
+       user_restaurants.append((restaurant[0], restaurant[2]))
+
+    for eventId in user_events:
+      events = g.conn.execute("SELECT E.event_name, E.date, E.start_time, E.end_time FROM Event E WHERE E.eventID = {0}".format(eventId))
+      for event in events:
+        itinerary['events'][eventId] = {
+          'e_name': event[0],
+          'date': event[1].strftime("%m/%d/%Y"),
+          'start_time': event[2].strftime("%H:%M"),
+          'end_time': event[3].strftime("%H:%M")
+        }
+    
+    for restaurant in user_restaurants:
+      r_addresses = g.conn.execute("SELECT * FROM Location L WHERE L.locationID = {0}".format(restaurant[1]))
+      for address in r_addresses:
+        formatted_address = '{0}, {1}, {2}'.format(address[2], address[4], str(address[3]))
+        itinerary['restaurants'][restaurant[0]] = {
+          'address': formatted_address,
+        }
+  print(itinerary)
+  return itinerary
 
 if __name__ == "__main__":
   import click

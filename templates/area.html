@@ -40,6 +40,7 @@
     {% for r_key, r_value in restaurants.items() %}
       <h3>{{ r_key }}</h3>
       <img src="{{r_value['image']}}" width="400" height="400" /> 
+      <li>{{ r_value["address"] }}</li>
       <li>{{ r_value["cuisine"] }}</li>
       <li>{{ r_value["rating"] }}</li>
       <li>{{ r_value["review_number"] }}</li>
