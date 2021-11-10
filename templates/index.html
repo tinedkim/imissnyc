@@ -30,8 +30,9 @@
       <br /><br />
       <input type="submit" value="Submit" />
     </form>
+    {% include 'area.html' %}
     <!--
-    {% include 'area.html' %} {% if itinerary is defined %}
+    {% if itinerary is defined %}
     <div id="itinerary">
       {% if itinerary['events']|length == 0 %}
       <h5>No events planned! Reserve your spot at your favorite events!</h5>
