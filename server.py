@@ -24,24 +24,6 @@ engine = create_engine(DATABASEURI)
 user = ()
 eventInfo = {}
 
-'''
-# how do we save uni on the page
-
-def reserve_restaurant():
-  # get uni from the page?? they have to be logged in
-  rname
-  location 
-  g.conn.execute('INSERT INTO EatsAt(rname, locationID, uni) VALUES (%s, %d, %s)', rname, location, uni)
-  return redirect('/')
-
-def buy_ticket():
-  # get uni from the page?? they have to be logged in
-  barcode
-  g.conn.execute('INSERT INTO Buys(ticket_barcode, uni) VALUES (%s, %s)', barcode, uni)
-  return redirect('/')
-
-'''
-
 @app.before_request
 def before_request():
   try:
@@ -139,17 +121,20 @@ def reserve_event():
   ticket_barcode = request.form.get('reserve')
   global user
   uni = user[0]
-  events = g.conn.execute("SELECT T.eventID FROM Ticket_Allowed_Entry T WHERE T.ticket_barcode = {0}".format(ticket_barcode))
-  # check for what events returns -- ideally we want [eventID]
-  ticket_eventID = events[0]
-  # check for what spots_left returns (what the data looks like) -- ideally we want a number
-  spots_left = g.conn.execute('SELECT E.spots_left FROM Event E WHERE E.eventID = {0}'.format(ticket_eventID))
+  events = g.conn.execute("SELECT T.eventID FROM Ticket_Allowed_Entry T WHERE T.ticket_barcode = '{0}'".format(ticket_barcode))
+  
+  for event in events:
+    ticket_eventID = event[0]
+  
+  spots = g.conn.execute('SELECT E.spots_left FROM Event E WHERE E.eventID = {0}'.format(ticket_eventID))
+  for spot_no in spots:
+    spots_left = spot_no[0]
   if (spots_left > 0):
     g.conn.execute('UPDATE Event SET spots_left = spots_left - 1 WHERE eventID = {0}'.format(ticket_eventID))
     g.conn.execute('INSERT INTO Buys(ticket_barcode, uni) VALUES (%s, %s)', ticket_barcode, uni)
     update_eventInfo()
   global eventInfo
-  return render_template("index.html", events = eventInfo)
+  return render_template("index.html", events = eventInfo, user = user)
   
 
 def getRestaurants(locationIds):
