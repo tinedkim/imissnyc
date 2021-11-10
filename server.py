@@ -182,8 +182,8 @@ def getRestaurants(locationIds):
       })
   return restaurantInfo
 
-@app.route('/reserve', methods=['POST'])
-def reserve_restauarnt():
+@app.route('/reserve_restaurant', methods=['POST'])
+def reserve_restaurant():
   rname = request.form.get('reserve')
   global user
   uni = user[0]
