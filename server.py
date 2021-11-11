@@ -34,7 +34,6 @@ def before_request():
     g.conn = None
 @app.teardown_request
 def teardown_request(exception):
-  print(user)
   try:
     g.conn.close()
   except Exception as e:
@@ -56,8 +55,9 @@ def getarea():
   eventInfo = {}
   events = getEvents(locationIds)
   restaurants = getRestaurants(locationIds)
+  itinerary = get_itinerary()
   
-  return render_template("index.html", events = events, restaurants = restaurants, user = user)
+  return render_template("index.html", events = events, restaurants = restaurants, user = user, itinerary=itinerary)
 
 def getEvents(locationIds):
   global eventInfo
@@ -203,7 +203,6 @@ def add():
 
 def get_itinerary():
   global user
-  # get all restaurant reserves from Eats_At
   user_events = []
   user_restaurants = []
   itinerary = {
@@ -238,7 +237,6 @@ def get_itinerary():
         itinerary['restaurants'][restaurant[0]] = {
           'address': formatted_address,
         }
-  print(itinerary)
   return itinerary
 
 if __name__ == "__main__":
