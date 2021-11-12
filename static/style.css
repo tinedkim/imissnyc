@@ -1,42 +1,56 @@
+body {
+  margin: 0 30px 0 30px;
+  background-color: #efe9e4;
+  font-family: "Barlow", sans-serif;
+  letter-spacing: 0.03em;
+  font-weight: 500;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+header {
+  height: 100px;
+  padding-top: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+footer {
+  align-self: flex-end;
+}
+
+.content {
+  flex-grow: 1;
+}
+
 #title {
   font-family: "Barlow", sans-serif;
-  font-size: 30px;
+  font-size: 40px;
   letter-spacing: 0.08em;
   font-weight: 500;
   display: flex;
   align-items: center;
 }
 
-body {
-  margin: 30px;
-  background-color: #efe9e4;
-  font-family: "Barlow", sans-serif;
-  letter-spacing: 0.03em;
-  font-weight: 500;
-}
-
-.header {
-  height: 100px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
 .login {
   display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .getarea {
   width: 500px;
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-between;
   align-items: center;
 }
 
 .arearesult {
+  width: 100%;
   display: flex;
   flex-direction: row;
   justify-content: space-evenly;
@@ -54,6 +68,7 @@ body {
   background-color: #fcf7f4;
   padding: 15px;
   margin-top: 20px;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 
 .eventtitle {
@@ -142,27 +157,20 @@ body {
   transform: translateY(0);
 }
 
-button,
-.button {
+.reserveform {
+  display: flex;
+  justify-content: center;
+}
+
+button {
   outline: none;
   border: none;
   font-family: "Barlow", sans-serif;
   font-size: 16px;
   letter-spacing: 0.2em;
   font-weight: 500;
-}
-
-.reserveform {
-  display: flex;
-  justify-content: center;
-}
-
-#reservebutton,
-.seetickets {
   background: #15312f;
   color: #fff;
-  width: 100%;
-  height: 50px;
   justify-self: center;
   cursor: pointer;
   font-weight: 400;
@@ -171,4 +179,29 @@ button,
 #reservebutton:hover,
 .seetickets:hover {
   opacity: 0.8;
+}
+
+#loginbutton {
+  font-size: 14px;
+  letter-spacing: 0.15em;
+  text-align: center;
+  width: 100px;
+  height: 25px;
+}
+
+.itinerary {
+  border-radius: 1rem;
+  width: 600px;
+  background-color: #fcf7f4;
+  padding: 30px;
+  margin-top: 20px;
+  box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+.github {
+  color: #c36f55;
+  text-decoration: none;
+}
+.github:hover {
+  text-decoration: underline;
 }

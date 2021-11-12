@@ -29,8 +29,8 @@
   </head>
 
   <body>
-    <div class="header">
-      <h1 id="title">
+    <header>
+      <h1 id="title" style="display: flex; align-items: flex-end">
         <img
           src="../static/nyc.png"
           height="60px"
@@ -43,57 +43,83 @@
       </h1>
       {% if user|length == 0 %}
       <form method="POST" action="/login" class="login">
-        <div>Name: <input type="text" name="name" /></div>
-        <div>Uni: <input type="text" name="uni" /></div>
-        <div id="loginButton">
-          <input type="submit" value="Sign Up" class="button" />
-        </div>
+        <div style = "margin-right: 15px;">Name: <input type="text" name="name" /></div>
+        <div style = "margin-right: 15px;">Uni: <input type="text" name="uni" /></div>
+        <button id = "loginbutton">Sign Up</button>
       </form>
       {% else %}
       <p>Welcome {{user[1]}}</p>
       {% endif %}
+    </header>
+    <div class="content">
+      <form
+        method="POST"
+        action="{{url_for('getarea')}}"
+        class="getarea"
+        name="getarea"
+      >
+        <label for="areas">Choose an area in NYC you'd want to go to:</label>
+        <select name="areas" id="areas">
+          <option value="" disabled selected>Please select an area!</option>
+          <option value="Times Square">Times Square</option>
+          <option value="Upper East Side">Upper East Side</option>
+          <option value="Williamsburg">Williamsburg</option>
+          <option value="Lower East Side">Lower East Side</option>
+          <option value="Chelsea">Chelsea</option>
+        </select>
+      </form>
+      <div style="display: flex; flex-direction: column; align-items: center">
+        {% include 'area.html' %} {% if itinerary is defined %}
+        <div class="itinerary">
+          {% if user is defined and user|length != 0 %}
+          <h2 class="subtitle">{{ user[1] }}'s Itinerary</h2>
+          {% else %}
+          <h2 class="subtitle">Your Itinerary</h2>
+          {% endif %} {% if user is defined and user|length == 0 %}
+          <h4 style="color: #6f7286; text-align: center">
+            please sign in to get your itinerary
+          </h3>
+          {% else %}
+          <h4 class="subtitle">Events</h4>
+          {% if itinerary['events']|length == 0 %}
+          <p>No events planned! Reserve your spot at your favorite events!</p>
+          {%else%} {% for eventID in itinerary['events'] %}
+          <p>
+            <span style="color: #c36f55">
+              {{ itinerary['events'][eventID]["date"] }}, {{
+              itinerary['events'][eventID]["start_time"] }} - {{
+              itinerary['events'][eventID]["end_time"] }} </span
+            >: {{itinerary['events'][eventID]["e_name"] }}
+          </p>
+          {% endfor %} {% endif %}
+          <h4 class="subtitle">Restaurants</h4>
+          {% if itinerary['restaurants']|length == 0 %}
+          <p>
+            You are not eating at any restaurant yet. Reserve your spot at your
+            favorite restaurant!
+          </p>
+          {%else%} {% for rname in itinerary['restaurants'] %}
+          <p>
+            <span style="color: #15312f"
+              >{{ itinerary['restaurants'][rname]["address"] }}
+            </span>
+            : {{ rname }}
+          </p>
+          {% endfor %} {% endif %} {% endif %}
+        </div>
+        {% endif %}
+      </div>
     </div>
-    <form
-      method="POST"
-      action="{{url_for('getarea')}}"
-      class="getarea"
-      name="getarea"
-    >
-      <label for="areas">Choose an area in NYC you'd want to go to:</label>
-      <select name="areas" id="areas">
-        <option value="" disabled selected>Please select an area!</option>
-        <option value="Times Square">Times Square</option>
-        <option value="Upper East Side">Upper East Side</option>
-        <option value="Williamsburg">Williamsburg</option>
-        <option value="Lower East Side">Lower East Side</option>
-        <option value="Chelsea">Chelsea</option>
-      </select>
-    </form>
-    {% include 'area.html' %} {% if itinerary is defined %}
-    <div id="itinerary">
-      <h2 class="subtitle">Your Itinerary</h2>
-      <h4 class="subtitle">Events</h4>
-      {% if itinerary['events']|length == 0 %}
-      <p>No events planned! Reserve your spot at your favorite events!</p>
-      <p>{%else%} {% for eventID in itinerary['events'] %}</p>
-
-      <h5>{{itinerary['events'][eventID]["e_name"] }}</h5>
+    <footer>
       <p>
-        {{ itinerary['events'][eventID]["start_time"] }} - {{
-        itinerary['events'][eventID]["end_time"] }}
+        <a
+          href="https://github.com/tinedkim/imissnyc"
+          class="github"
+          target="”_blank”"
+          >code</a
+        >
+        by christine kim and min joo kim
       </p>
-      {% endfor %} {% endif %}
-      <h4>Restaurants</h4>
-      {% if itinerary['restaurants']|length == 0 %}
-      <p>
-        You are not eating at any restaurant yet. Reserve your spot at your
-        favorite restaurant!
-      </p>
-      {%else%} {% for rname in itinerary['restaurants'] %}
-      <h5>{{ rname }}</h5>
-      <p>{{ itinerary['restaurants'][rname]["address"] }}</p>
-      {% endfor %} {% endif %}
-    </div>
-    {% endif %}
+    </footer>
   </body>
 </html>

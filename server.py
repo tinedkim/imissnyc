@@ -23,6 +23,7 @@ DATABASEURI = "postgresql://ck2980:7876@34.74.246.148/proj1part2"
 engine = create_engine(DATABASEURI)
 user = ()
 eventInfo = {}
+restaurantInfo = {}
 
 @app.before_request
 def before_request():
@@ -42,6 +43,8 @@ def teardown_request(exception):
 @app.route('/')
 def index():
   print(request.args)
+  global user
+  user = ()
   return render_template("index.html")
 
 @app.route("/getareas" , methods=['POST'])
@@ -52,7 +55,9 @@ def getarea():
   for result in cursor:
     locationIds.append(result[0])
   global eventInfo
+  global restaurantInfo
   eventInfo = {}
+  restaurantInfo = {}
   events = getEvents(locationIds)
   restaurants = getRestaurants(locationIds)
   itinerary = get_itinerary()
@@ -134,12 +139,13 @@ def reserve_event():
     g.conn.execute('INSERT INTO Buys(ticket_barcode, uni) VALUES (%s, %s)', ticket_barcode, uni)
     update_eventInfo()
   global eventInfo
-  itinerary = get_itinerary
-  return render_template("index.html", events = eventInfo, user = user, itinerary = itinerary)
+  global restaurantInfo
+  itinerary = get_itinerary()
+  return render_template("index.html", events = eventInfo, restaurants = restaurantInfo, user = user, itinerary = itinerary)
   
 
 def getRestaurants(locationIds):
-  restaurantInfo = {}
+  global restaurantInfo
   for id in locationIds:
     eats = g.conn.execute("SELECT EA.rname, EA.locationID FROM Eats_At EA WHERE EA.locationID = {0}".format(id))
     for result in eats:
@@ -170,6 +176,7 @@ def getRestaurants(locationIds):
 
 @app.route('/reserve_restaurant', methods=['POST'])
 def reserve_restaurant():
+  global restaurantInfo
   rname = request.form.get('reserve_restaurant')
   global user
   uni = user[0]

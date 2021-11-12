@@ -1,0 +1,26 @@
+{% extends "index.html" %} {% if itinerary is defined %}
+<div id="itinerary">
+  <h2 class="subtitle">Your Itinerary</h2>
+  <h4 class="subtitle">Events</h4>
+  {% if itinerary['events']|length == 0 %}
+  <p>No events planned! Reserve your spot at your favorite events!</p>
+  <p>{%else%} {% for eventID in itinerary['events'] %}</p>
+
+  <h5>{{itinerary['events'][eventID]["e_name"] }}</h5>
+  <p>
+    {{ itinerary['events'][eventID]["start_time"] }} - {{
+    itinerary['events'][eventID]["end_time"] }}
+  </p>
+  {% endfor %} {% endif %}
+  <h4>Restaurants</h4>
+  {% if itinerary['restaurants']|length == 0 %}
+  <p>
+    You are not eating at any restaurant yet. Reserve your spot at your favorite
+    restaurant!
+  </p>
+  {%else%} {% for rname in itinerary['restaurants'] %}
+  <h5>{{ rname }}</h5>
+  <p>{{ itinerary['restaurants'][rname]["address"] }}</p>
+  {% endfor %} {% endif %}
+</div>
+{% endif %}
