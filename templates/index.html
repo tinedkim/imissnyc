@@ -1,39 +1,78 @@
 <html>
-  <style>
-    body {
-      font-size: 15pt;
-      font-family: arial;
-    }
-  </style>
+  <head>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500&family=DM+Serif+Display&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript">
+      $(document).ready(function (e) {
+        $(".seetickets").on("click", function () {
+          var divID = "#" + $(this).attr("id") + "_tickets";
+          $(divID).slideToggle();
+          $(".seetickets").text(function (i, text) {
+            return text === "hide tickets" ? "show tickets" : "hide tickets";
+          });
+        });
+
+        $("#areas").change(function () {
+          this.form.submit();
+        });
+      });
+    </script>
+  </head>
 
   <body>
-    {% if user|length == 0 %}
-    <form method="POST" action="/login">
-      <p>
-        Name: <input type="text" name="name" /> Uni:
-        <input type="text" name="uni" />
-        <input type="submit" value="Sign Up" />
-      </p>
-    </form>
-    {% else %}
-    <p>Welcome {{user[1]}}</p>
-    {% endif %}
-    <form method="POST" action="{{url_for('getarea')}}">
+    <div class="header">
+      <h1 id="title">
+        <img
+          src="../static/nyc.png"
+          height="60px"
+          style="
+            filter: invert(51%) sepia(11%) saturate(2263%) hue-rotate(328deg)
+              brightness(95%) contrast(81%);
+          "
+        />
+        I MISS NYC
+      </h1>
+      {% if user|length == 0 %}
+      <form method="POST" action="/login" class="login">
+        <div>Name: <input type="text" name="name" /></div>
+        <div>Uni: <input type="text" name="uni" /></div>
+        <div id="loginButton">
+          <input type="submit" value="Sign Up" class="button" />
+        </div>
+      </form>
+      {% else %}
+      <p>Welcome {{user[1]}}</p>
+      {% endif %}
+    </div>
+    <form
+      method="POST"
+      action="{{url_for('getarea')}}"
+      class="getarea"
+      name="getarea"
+    >
       <label for="areas">Choose an area in NYC you'd want to go to:</label>
       <select name="areas" id="areas">
+        <option value="" disabled selected>Please select an area!</option>
         <option value="Times Square">Times Square</option>
         <option value="Upper East Side">Upper East Side</option>
         <option value="Williamsburg">Williamsburg</option>
         <option value="Lower East Side">Lower East Side</option>
         <option value="Chelsea">Chelsea</option>
       </select>
-      <br /><br />
-      <input type="submit" value="Submit" />
     </form>
     {% include 'area.html' %} {% if itinerary is defined %}
     <div id="itinerary">
-      <h3>Your Itinerary</h3>
-      <h4>Events</h4>
+      <h2 class="subtitle">Your Itinerary</h2>
+      <h4 class="subtitle">Events</h4>
       {% if itinerary['events']|length == 0 %}
       <p>No events planned! Reserve your spot at your favorite events!</p>
       <p>{%else%} {% for eventID in itinerary['events'] %}</p>

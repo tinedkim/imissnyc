@@ -1,55 +1,126 @@
-<div id="event">
-  {% if events is defined %}
-    {% for e_key, e_value in events.items() %}
-      <h3>{{ e_value["e_name"] }}</h3>
-      <li>{{ e_value["e_type"] }}</li>
-      <li>{{ e_value["address"] }}</li>
-      <li>{{ e_value["date"] }}</li>
-      <li>{{ e_value["start_time"] }} to {{ e_value["end_time"] }}</li>
-      {% if e_value["spots_left"] > 1 %}
-        <li>{{ e_value["spots_left"] }} spots left</li>
-      {% elif e_value["spots_left"] == 1 %}
-        <li>Only 1 spot left!</li>
-      {% else %}
-         <li>No spots left</li>
-      {% endif %}
-      <img src="{{e_value['image']}}" width="400" height="400" />
-      
-      <div id="ticket">
-        <h4>Tickets</h4>
-        {% for t_key, t_value in events[e_key]['tickets'].items() %}
-          <li>{{ t_key }}</li>
-          <li>${{ t_value["price"] }}</li>
-          {% if t_value["owner"] != 'none' %}
-            <button type="button" disabled>{{ t_value["owner"] }}</button>
-          {% elif user|length == 0 %}
-            <button type="button" disabled>Sign in to reserve</button>
-          {% else %}
-          <form method="POST" action="{{url_for('reserve_event')}}">
-            <button type="submit" name="reserve" value="{{ t_key }}">Reserve</button>
-          </form>
-          {% endif %}
-        {% endfor %}
+<div class="arearesult">
+  <div class="eventlist">
+    {% if events is defined %}
+    <h2 class="subtitle">Events</h2>
+    <div class="event">
+      {% for e_key, e_value in events.items() %}
+      <div class="card">
+        <img src="{{e_value['image']}}" width="400" height="400" />
+        <h3 class="eventtitle">{{ e_value["e_name"] }}</h3>
+        <div id="eventinfo">
+          <div>
+            <p>{{ e_value["e_type"] }}</p>
+            <p style="color: #c36f55">
+              {{ e_value["date"] }}, {{ e_value["start_time"] }} to {{
+              e_value["end_time"] }}
+            </p>
+            <p style="color: #6f7286; font-size: 13px">
+              {{ e_value["address"] }}
+            </p>
+          </div>
+          <div>
+            {% if e_value["spots_left"] > 1 %}
+            <p>{{ e_value["spots_left"] }} spots left</p>
+            {% elif e_value["spots_left"] == 1 %}
+            <p>1 spot left!</p>
+            {% else %}
+            <p>No spots left</p>
+            {% endif %}
+          </div>
+        </div>
+        <button class="seetickets" id="{{e_key}}">show tickets</button>
       </div>
-    {% endfor %}
-  {% endif %}
-</div>
+      <div class="ticket" id="{{e_key}}_tickets" style="display: none">
+        <h3>Tickets</h3>
+        {% for t_key, t_value in events[e_key]['tickets'].items() %}
+        <div id="ticketinfo">
+          <p>{{ t_key }}</p>
+          <p>${{ t_value["price"] }}</p>
+        </div>
+        {% if t_value["owner"] != 'none' %}
+        <button type="button" disabled>
+          <div class="img__wrap">
+            <img src="../static/ticket.jpeg" height="125px" />
+            <div class="img__description_layer">
+              <p class="img__description">{{ t_value["owner"] }}</p>
+            </div>
+          </div>
+        </button>
+        {% elif user|length == 0 %}
+        <button type="button" disabled>
+          <div class="img__wrap">
+            <img src="../static/ticket.jpeg" height="125px" />
+            <div class="img__description_layer">
+              <p class="img__description">sign in to reserve</p>
+            </div>
+          </div>
+        </button>
+        {% else %}
+        <form method="POST" action="{{url_for('reserve_event')}}">
+          <button
+            type="submit"
+            name="reserve"
+            value="{{ t_key }}"
+            style="cursor: pointer"
+          >
+            <div class="img__wrap">
+              <img src="../static/ticket.jpeg" height="125px" />
+              <div class="img__description_layer">
+                <p class="img__description">reserve</p>
+              </div>
+            </div>
+          </button>
+        </form>
+        {% endif %} {% endfor %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
 
-<div id="restaurant"></div>
-  {% if restaurants is defined %} 
-    {% for r_key, r_value in restaurants.items() %}
-      <h3>{{ r_key }}</h3>
-      <img src="{{r_value['image']}}" width="400" height="400" /> 
-      <li>{{ r_value["address"] }}</li>
-      <li>{{ r_value["cuisine"] }}</li>
-      <li>{{ r_value["rating"] }}</li>
-      <li>{{ r_value["review_number"] }}</li>
-      <li>{{ r_value["price_estimation"] }}</li>
-      
-      <form method="POST" action="{{url_for('reserve_restaurant')}}">
-        <button type="submit" name="reserve_restaurant" value="{{ r_key }}">Reserve</button>
-      </form>
-      
-    {% endfor %}
-  {% endif %}
+  <div class="restaurantlist">
+    {% if restaurants is defined %}
+    <h2 class="subtitle">Restaurants</h2>
+    <div class="restaurant">
+      {% for r_key, r_value in restaurants.items() %}
+      <div class="card">
+        <img src="{{r_value['image']}}" width="400" height="400" />
+        <h3 class="eventtitle">{{ r_key }}</h3>
+        <div id="rinfo">
+          <div id="rrow">
+            <p style="color: #c36f55">{{ r_value["cuisine"] }}</p>
+            <p>
+              {{ r_value["review_number"] }} reviews, {{ r_value["rating"] }}
+              <img src="../static/star.png" height="12px" />
+            </p>
+          </div>
+          <div id="rrow">
+            <p style="color: #6f7286; font-size: 13px; line-height: 15px">
+              {{ r_value["address"] }}
+            </p>
+
+            <p>
+              {% for i in range(r_value["price_estimation"]) %} $ {% endfor %}
+            </p>
+          </div>
+        </div>
+        <form
+          method="POST"
+          action="{{url_for('reserve_restaurant')}}"
+          class="reserveform"
+        >
+          <button
+            type="submit"
+            name="reserve_restaurant"
+            value="{{ r_key }}"
+            id="reservebutton"
+          >
+            reserve
+          </button>
+        </form>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
 </div>
