@@ -181,16 +181,12 @@ def reserve_restaurant():
   global user
   uni = user[0]
   # get location id from restaurantInfo
-
+  locationID = restaurantInfo[rname]['loc_id']
   # insert rname, location id, and uni into eats_at
-
+  g.conn.execute('INSERT INTO Eats_At(rname, locationID, uni) VALUES (%s, %s, %s)', rname, locationID, uni)
   # reserving a restaurant should update user's itinerary
   itinerary = get_itinerary()
-  render_template("index.html", itinerary = itinerary)
-
-  # restaurants = g.conn.execute("SELECT E.locationID FROM Eats_At E WHERE E.rname = '{0}'".format(rname))
-  # check for what restaurants returns -- ideally we want [locationID]
-  # r_locationID = restaurants[0] 
+  return render_template("index.html", itinerary = itinerary)
 
 @app.route('/login', methods=['POST'])
 def add():
