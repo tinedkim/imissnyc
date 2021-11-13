@@ -198,10 +198,25 @@ button {
   box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
 }
 
+.mainpic {
+  margin-top: 150px;
+  display: flex;
+  justify-content: center;
+}
+
+#pic {
+  opacity: 70%;
+  width: 50%;
+  height: 50%;
+}
+
 .github {
   color: #c36f55;
-  text-decoration: none;
 }
 .github:hover {
   text-decoration: underline;
+}
+
+a {
+  text-decoration: none;
 }

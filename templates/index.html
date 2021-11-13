@@ -30,6 +30,7 @@
 
   <body>
     <header>
+    <a href = "/" style="color:#000">
       <h1 id="title" style="display: flex; align-items: flex-end">
         <img
           src="../static/nyc.png"
@@ -41,6 +42,7 @@
         />
         I MISS NYC
       </h1>
+      </a>
       {% if user|length == 0 %}
       <form method="POST" action="/login" class="login">
         <div style = "margin-right: 15px;">Name: <input type="text" name="name" /></div>
@@ -108,6 +110,9 @@
           {% endfor %} {% endif %} {% endif %}
         </div>
         {% endif %}
+      </div>
+      <div class = "mainpic">
+        <img src="../static/skyline.png" id = "pic"/>
       </div>
     </div>
     <footer>
