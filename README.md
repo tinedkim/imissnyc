@@ -1,6 +1,9 @@
 # I MISS NYC
 
-Add in project overview and summary here
+The general domain of the application data will emulate the data required to spend a day in New York City. When a user spends a day, they would usually want to select specific locations/areas in the city. Also, when a user plans to stay at a location, they will want to embrace the visuals of the place they selected. According to the central location they select, they will choose which events that they want to attend and/or eat out at as many recommended restaurants as they’d like in the area which thereby completes an ideal day in New York City.
+
+
+The website will narrow New York City into five well-represented areas — Times Square, Upper East Side, Williamsburg, Chelsea, and Lower East Side. The application also allows users to “go” to a location by clicking on a tab containing the backdrop of the location. The location tab will return relevant events and restaurants of each area. For events, the application will allow users to make a reservation ticket and update how many spots are left. Finally, the application will provide recommendations on the restaurants based on the location the user chose. 
 
 ## Submission Details
 Our PostgreSQL account: ck2980 in the 4111-team-proj instance
