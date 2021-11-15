@@ -16,8 +16,9 @@
         // Retrieves div id of event tickets and adds slide toggle
         $(".seetickets").on("click", function () {
           var divID = "#" + $(this).attr("id") + "_tickets";
+          var buttonID = "#" + $(this).attr("id");
           $(divID).slideToggle();
-          $(".seetickets").text(function (i, text) {
+          $(buttonID).text(function (i, text) {
             return text === "hide tickets" ? "show tickets" : "hide tickets";
           });
         });
