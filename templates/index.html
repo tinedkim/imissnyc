@@ -13,6 +13,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
     <script type="text/javascript">
       $(document).ready(function (e) {
+        // Retrieves div id of event tickets and adds slide toggle
         $(".seetickets").on("click", function () {
           var divID = "#" + $(this).attr("id") + "_tickets";
           $(divID).slideToggle();
@@ -20,7 +21,7 @@
             return text === "hide tickets" ? "show tickets" : "hide tickets";
           });
         });
-
+        // Submits on change of dropdown (instead of traditional button)
         $("#areas").change(function () {
           this.form.submit();
         });
