@@ -115,6 +115,12 @@
           action="{{url_for('reserve_restaurant')}}"
           class="reserveform"
         >
+
+        {% if user|length == 0 %}
+        <button type="button" style = "cursor: not-allowed; width: 100%" disabled>
+          <p>sign in to reserve</p>
+        </button>
+        {% else %}
           <button
             type="submit"
             name="reserve_restaurant"
@@ -124,6 +130,7 @@
           >
             reserve
           </button>
+        {% endif %}
         </form>
       </div>
       {% endfor %}
