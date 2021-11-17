@@ -8,7 +8,7 @@ The website will narrow New York City into five well-represented areas — Times
 ## Submission Details
 Our PostgreSQL account: ck2980 in the 4111-team-proj instance
 
-URL of our web application: http://34.138.23.99:8111/
+URL of our web application: http://34.138.27.29:8111
 
 ## Proposal Changes
 We have implemented all the parts of SQL schema from our original proposal in Part 1, except the Goes_To table. The Goes_To relationship set was not needed because a user can go to any event(s) they choose to go; they are not chosen for a specific event. Additionally, the Goes_To table is not directly related to the frontend so we decided to omit the usage of this table.
